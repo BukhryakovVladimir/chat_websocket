@@ -26,6 +26,12 @@
         var messageInput = $("#message");
         var messages = $("#messages");
 
+        $.get("http://localhost:8080/readCache", function(data) {
+        // Handle the response data if needed
+        messages.append($("<li>").html(data.replace(/\n/g, '<br>')));
+        console.log("Cache data:", data);
+        });
+
         $("#chatbox").submit(function () {
           var nickname = nicknameInput.val();
           var message = messageInput.val();
