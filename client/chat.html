@@ -2,7 +2,7 @@
   <head>
     <title>Chat</title>
     <style>
-      input {
+      button {
         display: block;
       }
       ul {
@@ -13,33 +13,44 @@
   <body>
     <ul id="messages"></ul>
     <form id="chatbox">
-      <textarea></textarea>
-      <input type="submit" value="Send" />
+      <input type="text" id="nickname" placeholder="Enter your nickname">
+      <input type="text" id="message" placeholder="Type your message">
+      <button type="submit">Send</button>
     </form>
 
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script>
       $(function () {
         var socket = null;
-        var msgBox = $("#chatbox textarea");
+        var nicknameInput = $("#nickname");
+        var messageInput = $("#message");
         var messages = $("#messages");
 
         $("#chatbox").submit(function () {
-          if (!msgBox.val()) return false;
+          var nickname = nicknameInput.val();
+          var message = messageInput.val();
+
+          if (!nickname || !message) {
+            alert("Please enter both nickname and message before sending.");
+            return false;
+          }
+
           if (!socket) {
             alert("Error: There is no socket connection.");
             return false;
           }
 
-          socket.send(msgBox.val());
-          msgBox.val("");
+          // Append nickname to the message and send it via the socket
+          socket.send(`${nickname}: ${message}`);
+          messageInput.val("");
+
           return false;
         });
 
         if (!window["WebSocket"]) {
           alert("Error: Your browser does not support web sockets.");
         } else {
-          socket = new WebSocket("ws://192.168.0.158:8080/room");
+          socket = new WebSocket("ws://localhost:8080/room");
           socket.onclose = function () {
             alert("Connection has been closed.");
           };
